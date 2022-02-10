@@ -51,11 +51,11 @@ Service Accounts = sa
 ssh nc-user@x.x.x.x
 
 ```
-Add nameserver 8.8.8.8
+* Add nameserver 8.8.8.8
 ```
 vi /etc/resolv.conf
 ```
-Setup
+* Setup
 ```
 yum update
 yum install yum-utils -y
@@ -72,10 +72,16 @@ sudo vi /etc/fstab
 #/dev/mapper/centos-swap swap swap defaults 0 0
 ```
 [Fixed] Failed to set locale, defaulting to C
+_test edit vi /etc/environment using en_US:_
 ```
+sudo vi /etc/environment
+
+LC_ALL="en_US.UTF-8" 
+LC_CTYPE="en_US.UTF-8"
+ LANGUAGE="en_US.UTF-8"
 ```
 
-Install Firewall
+* Install Firewall
 ```
 yum install firewalld
 
@@ -83,7 +89,7 @@ systemctl start firewalld
 systemctl enable firewalld
 systemctl status firewalld
 ```
-Setup Firewall
+* Setup Firewall
 ```
 firewall-cmd --permanent --add-port=80/tcp
 firewall-cmd --permanent --add-port=443/tcp
@@ -103,12 +109,41 @@ firewall-cmd --reload
 ```
 
 ## Install Docker
-Setup Firewall
+* Setup Docker
+_Download and Install_
 ```
 yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo -y
 yum install -y docker-ce
 ```
-
+_make new a directory_
+```
+sudo mkdir /etc/docker
+```
+_edit file_
+```
+sudo vi /etc/docker/daemon.json
+```
+_depend what you are running on_
+```
+{
+ "exec-opts": ["native.cgroupdriver=systemd"],
+ "log-driver": "json-file",
+ "log-opts": {
+ "max-size": "100m"
+ },
+ "storage-driver": "overlay2"
+}
+--- vmware
+{
+ "exec-opts": ["native.cgroupdriver=systemd"],
+ "log-driver": "json-file",
+ "log-opts": {
+ "max-size": "100m"
+ },
+ "storage-driver": "devicemapper"
+}
+--end vmware
+```
 ## Features
 * Manage all Kong Admin API Objects.
 * Import Consumers from remote sources (Databases, files, APIs etc.).
