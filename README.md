@@ -18,7 +18,7 @@ _วิธีติดตั้ง Kubernetes, Kong และ Konga_
 - [**More Kong related stuff**](#more-kong-related-stuff)
 - [**License**](#license)
 
-### Setup auto completion and alias on terminal
+## Setup auto completion and alias on terminal
 _ก่อนเริ่มใส่คำสั่ง shortcut_
 ```
 echo 'source <(kubectl completion bash)' >>~/.bashrc
@@ -42,11 +42,13 @@ Service Accounts = sa
 ## Requirements
 
 - Cloud สำหรับติดตั้ง https://www.nipa.cloud/
+- CentOS 7
+- PostgresSQL < 14
+- 3-4 ready instances
 
 ## Discussions & Support
 If you need to discuss anything Konga related, we have a chatroom on Gitter:
 
-[![Gitter chat](https://badges.gitter.im/pantsel-konga/Lobby.png)](https://gitter.im/pantsel-konga/Lobby)
 
 ## Features
 * Manage all Kong Admin API Objects.
