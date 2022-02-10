@@ -5,24 +5,21 @@ _วิธีติดตั้ง Kubernetes, Kong และ Konga_
 *****************************************************************************************
 
 ## Contents
-
-- [**Initial setup**](#Setup-auto-completion-and-alias-on-terminal)
-- [**Requirements**](#Prerequisites)
-- [**Compatibility**](#compatibility)
 - [**Prerequisites**](#prerequisites)
-- [**Used libraries**](#used-libraries)
-- [**Installation**](#installation)
-- [**Configuration**](#configuration)
-- [**Environment variables**](#environment-variables)
+- [**Setup instances**](#Setting-up-instances)
+- [**Install Docker**](#Install-Docker)
+- [**Master node**](#Master-node)
+- [**Kong and Konga**](#Kong-and-Konga*)
 - [**Running Konga**](#running-konga)
 - [**Upgrading**](#upgrading)
+- [**Tips**](#Tips)
 - [**FAQ**](#faq)
 - [**More Kong related stuff**](#more-kong-related-stuff)
 - [**License**](#license)
 
 *****************************************************************************************
 
-## Setup auto completion and alias on terminal
+## Tips
 _ก่อนเริ่มใส่คำสั่ง shortcut_
 ```
 echo 'source <(kubectl completion bash)' >>~/.bashrc
@@ -262,6 +259,8 @@ kubeadm token create hp9b0k.1g9tqz8vkf78ucwf --print-join-command
 
 ```
 docker pull devapi47/kube1:v1.0
+
+docker ps
 ```
 
 * LoadBalancer
@@ -272,14 +271,68 @@ kubectl expose deployment/nginx-deployment --name=nginx-api1 --port=80 --type=Lo
 
 ### Kong
 
+* Install environment
+```
+yum install -y gcc gcc-c++ pcre pcre-devel zlib zlib-devel openssl openssl-devel git
+```
+
+* Install postgresql 10
+```
+yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+yum install -y postgresql10-server
+yum install -y postgresql10-server
+/usr/pgsql-10/bin/postgresql-10-setup initdb
+systemctl enable postgresql-10
+systemctl start postgresql-10
+```
+
+* Change password postgres and add user kong
+```
+# passwd postgres
+# adduser kong
+# passwd kong
+```
+* Create DB for Kong
+```
+psql
+create user kong with password 'your_password';
+create database kong owner kong;
+grant all privileges on database kong to kong;
+\q
+exit;
+```
+
+* Config Postgres 1
+_trust, peer, md5_
+```
+# vi /var/lib/pgsql/10/data/pg_hba.conf
+
+add this
+
+host    all   all  127.0.0.1/32  trust
+```
+
+* Config Postgres 2
+```
+vi /var/lib/pgsql/10/data/postgresql.conf
+
+listen_addresses = 'localhost'
+
+systemctl restart postgresql-10.service
+```
+
+
+
 * Install Kong
+
 ```
 --- install docker konga
 docker pull pantsel/konga
 docker run -d -p 1337:1337 --name konga pantsel/konga
 ```
 
-
+```
+```
 *****************************************************************************************
 
 ## Short key
@@ -307,7 +360,7 @@ You may also configure Konga to authenticate via [LDAP](./docs/LDAP.md).
 
 *****************************************************************************************
 
-## Problems
+## FAQ
 Clear ssh key:
 ```
 ssh-keygen -R 10.101.108.101
