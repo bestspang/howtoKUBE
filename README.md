@@ -214,7 +214,13 @@ kubectl version --client
 ## Master node
 **For Master node only**
 
-* 1
+* 0
+[for more](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/)
+```
+ifconfig
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=10.148.0.6
+```
+* 1 / run as a regular user
 ```
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
@@ -293,6 +299,13 @@ You may also configure Konga to authenticate via [LDAP](./docs/LDAP.md).
 Clear ssh key:
 ```
 ssh-keygen -R 10.101.108.101
+```
+
+check firewall:
+[for more](https://www.liquidweb.com/kb/how-to-stop-and-disable-firewalld-on-centos-7/)
+```
+systemctl status firewalld
+sudo firewall-cmd --zone=work --list-all
 ```
 
 ## More Kong related stuff
