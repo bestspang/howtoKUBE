@@ -163,18 +163,67 @@ $ npm run production
 Konga GUI will be available at `http://localhost:1337`
 
 
-### Production Docker Image
+### nginx
 
 The following instructions assume that you have a running Kong instance following the
 instructions from [Kong's docker hub](https://hub.docker.com/_/kong/)
 ```
-$ docker pull pantsel/konga
-$ docker run -p 1337:1337 \
-             --network {{kong-network}} \ // optional
-             --name konga \
-             -e "NODE_ENV=production" \ // or "development" | defaults to 'development'
-             -e "TOKEN_SECRET={{somerandomstring}}" \
-             pantsel/konga
+#upstream BackendSever {
+#    server 10.148.0.7;
+#}
+
+#upstream web {
+#  ip_hash;
+#  server 10.148.0.7:8000;
+#}
+
+server {
+    listen       0.0.0.0:80;
+    server_name  localhost;
+
+    #access_log  /var/log/nginx/host.access.log  main;
+
+    location / {
+        root   /usr/share/nginx/html;
+        index  index.html index.htm;
+    }
+
+    location /kubex {
+        proxy_pass http://127.0.0.1:8000; #30191
+        proxy_http_version  1.1;
+        #proxy_set_header Upgrade $http_upgrade;
+        #proxy_set_header Connection 'upgrade';
+        #proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        #proxy_redirect off;
+        #try_files $uri $uri/ =404;
+    }
+
+    #error_page  404              /404.html;
+
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+
+    # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+    #
+    #location ~ \.php$ {
+    #    proxy_pass   http://127.0.0.1;
+    #}
+
+    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+    #
+    #location ~ \.php$ {
+    #    root           html;
+    #    fastcgi_pass   127.0.0.1:9000;
+    #    fastcgi_index  index.php;
+    #    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
+    #    include        fastcgi_params;
+    #}
+
 ```
 
 #### To use one of the supported databases
