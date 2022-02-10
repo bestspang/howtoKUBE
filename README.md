@@ -321,7 +321,16 @@ check firewall:
 systemctl status firewalld
 sudo firewall-cmd --zone=work --list-all
 ```
-
+Can't start firewall:
+```
+```
+Upgrade Kernel:
+```
+grub2-mkconfig -o /boot/grub2/grub.cfg
+or
+mv /boot/grub/grub.conf /boot/grub/bk_grub.conf
+yum -y update && yum -y reinstall kernel
+```
 ## More Kong related stuff
 - [**Kong Admin proxy**](https://github.com/pantsel/kong-admin-proxy)
 - [**Kong Middleman plugin**](https://github.com/pantsel/kong-middleman-plugin)
