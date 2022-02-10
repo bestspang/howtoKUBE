@@ -5,7 +5,7 @@ _วิธีติดตั้ง Kubernetes, Kong และ Konga_
 ## Contents
 
 - [**Initial setup**](#Setup-auto-completion-and-alias-on-terminal)
-- [**Features**](#features)
+- [**Requirements**](#Requirements)
 - [**Compatibility**](#compatibility)
 - [**Prerequisites**](#prerequisites)
 - [**Used libraries**](#used-libraries)
@@ -46,8 +46,32 @@ Service Accounts = sa
 - PostgresSQL < 14
 - 3-4 ready instances
 
-## Discussions & Support
-If you need to discuss anything Konga related, we have a chatroom on Gitter:
+## Setting up instances
+```
+ssh nc-user@x.x.x.x
+
+```
+Add nameserver 8.8.8.8
+```
+vi /etc/resolv.conf
+```
+Setup
+```
+yum update
+yum install yum-utils -y
+
+setenforce 0
+sed -i --follow-symlinks 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
+modprobe br_netfilter
+modprobe overlay
+echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
+swapoff -a
+sudo nano /etc/fstab
+ #/dev/mapper/centos-swap swap swap defaults 0 0
+```
+[Fixed] Failed to set locale, defaulting to C
+```
+```
 
 
 ## Features
