@@ -1,30 +1,10 @@
 ## Getting Started to [KUBE](https://kubernetes.io/docs/home/)    
 
-_Konga is not an official app. No affiliation with [Kong](https://www.konghq.com/)._
+_วิธีติดตั้ง Kubernetes, Kong และ Konga_
 
-### Setup auto completion and alias on terminal
-```
-echo 'source <(kubectl completion bash)' >>~/.bashrc
-echo 'alias k=kubectl' >>~/.bashrc
-echo 'complete -F __start_kubectl k' >>~/.bashrc
-source ~/.bashrc
-If you find Konga helpful,
-you can show your support and help me continue maintaining the project by [buying me a coffee](buymeacoff.ee/F1aRIj8CG)
-or becoming a [Patron](https://www.patreon.com/kongaui). Cheers!
-```
+## Contents
 
-<a href="https://www.buymeacoffee.com/F1aRIj8CG" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/yellow_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a>
-
-
-## Supported by
-
-Special thanks to our supporters that help us keep the project going and the motivation alive.
-
-<a href="https://www.greenbird.com" target="_blank"><img src="screenshots/greenbird.png" width="250"></a>
-
-## Summary
-
-- [**Discussions & Support**](#discussions--support)
+- [**Initial setup**](#Setup-auto-completion-and-alias-on-terminal)
 - [**Features**](#features)
 - [**Compatibility**](#compatibility)
 - [**Prerequisites**](#prerequisites)
@@ -37,6 +17,31 @@ Special thanks to our supporters that help us keep the project going and the mot
 - [**FAQ**](#faq)
 - [**More Kong related stuff**](#more-kong-related-stuff)
 - [**License**](#license)
+
+### Setup auto completion and alias on terminal
+_ก่อนเริ่มใส่คำสั่ง shortcut_
+```
+echo 'source <(kubectl completion bash)' >>~/.bashrc
+echo 'alias k=kubectl' >>~/.bashrc
+echo 'complete -F __start_kubectl k' >>~/.bashrc
+source ~/.bashrc
+```
+คำสั่งย่อต่างๆ
+```
+Pods = po
+ReplicaSets = rs
+Deployments = deploy
+Services = svc
+Namespaces = ns
+Network Policies = netpol
+Persistent Volumes = pv
+PersistentVolumeClaims = pvc
+Service Accounts = sa
+```
+
+## Requirements
+
+- Cloud สำหรับติดตั้ง https://www.nipa.cloud/
 
 ## Discussions & Support
 If you need to discuss anything Konga related, we have a chatroom on Gitter:
