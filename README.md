@@ -80,6 +80,16 @@ LC_ALL="en_US.UTF-8" 
 LC_CTYPE="en_US.UTF-8"
  LANGUAGE="en_US.UTF-8"
 ```
+_or_
+```
+vi /etc/bashrc
+export LANG=en_US.UTF-8
+export LANGUAGE=en_US.UTF-8
+export LC_COLLATE=C
+export LC_CTYPE=en_US.UTF-8
+export LC_ALL="en_US.UTF-8"
+source /etc/bashrc
+```
 
 * Install Firewall
 ```
@@ -144,15 +154,25 @@ _depend what you are running on_
 }
 --end vmware
 ```
-## Features
-* Manage all Kong Admin API Objects.
-* Import Consumers from remote sources (Databases, files, APIs etc.).
-* Manage multiple Kong Nodes.
-* Backup, restore and migrate Kong Nodes using Snapshots.
-* Monitor Node and API states using health checks.
-* Email & Slack notifications.
-* Multiple users.
-* Easy database integration (MySQL, postgresSQL, MongoDB).
+Reload and start up
+```
+  systemctl daemon-reload
+  systemctl start docker && systemctl enable docker
+```
+## Kubernetes
+* Check Version
+```
+yum list --showduplicates kubelet --disableexcludes=kubernetes -y
+yum list --showduplicates kubeadm --disableexcludes=kubernetes -y
+yum list --showduplicates kubectl --disableexcludes=kubernetes -y
+```
+* Install and Start
+```
+yum install -y kubelet-1.23.3 kubectl-1.23.3 kubeadm-1.23.3
+#!!! yum install -y kubelet kubeadm kubectl
+systemctl start kubelet && systemctl enable kubelet
+```
+* DONE
 
 ## Compatibility
 **From 0.14.0 onwards, Konga is ONLY compatible with Kong 1.x**
