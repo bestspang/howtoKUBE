@@ -2,10 +2,12 @@
 
 _วิธีติดตั้ง Kubernetes, Kong และ Konga_
 
+*****************************************************************************************
+
 ## Contents
 
 - [**Initial setup**](#Setup-auto-completion-and-alias-on-terminal)
-- [**Requirements**](#Requirements)
+- [**Requirements**](#Prerequisites)
 - [**Compatibility**](#compatibility)
 - [**Prerequisites**](#prerequisites)
 - [**Used libraries**](#used-libraries)
@@ -17,6 +19,8 @@ _วิธีติดตั้ง Kubernetes, Kong และ Konga_
 - [**FAQ**](#faq)
 - [**More Kong related stuff**](#more-kong-related-stuff)
 - [**License**](#license)
+
+*****************************************************************************************
 
 ## Setup auto completion and alias on terminal
 _ก่อนเริ่มใส่คำสั่ง shortcut_
@@ -39,12 +43,13 @@ PersistentVolumeClaims = pvc
 Service Accounts = sa
 ```
 
-## Requirements
-
-- Cloud สำหรับติดตั้ง https://www.nipa.cloud/
-- CentOS 7
+## Prerequisites
+- Cloud สำหรับติดตั้ง [Nipa](https://www.nipa.cloud/)
+- CentOS 7 >= 8, <= 12.x (12.16 LTS is recommended)
 - PostgresSQL < 14
 - 3-4 ready instances
+
+*****************************************************************************************
 
 ## Setting up instances
 ```
@@ -204,6 +209,8 @@ kubectl version --client
 ```
 * DONE
 
+*****************************************************************************************
+
 ## Master node
 **For Master node only**
 
@@ -240,38 +247,7 @@ sysctl --system
 If you're on an older Kong version , use [this](https://github.com/pantsel/konga/tree/legacy) branch
 or `konga:legacy` from docker hub instead.
 
-## Prerequisites
-- A running [Kong installation](https://getkong.org/)
-- Nodejs >= 8, <= 12.x (12.16 LTS is recommended)
-- Npm
-
 ## Used libraries
-* Sails.js, http://sailsjs.org/
-* AngularJS, https://angularjs.org/
-
-## Installation
-
-Install `npm` and `node.js`. Instructions can be found [here](http://sailsjs.org/#/getStarted?q=what-os-do-i-need).
-
-Install `bower`, ad `gulp` packages.
-```
-$ git clone https://github.com/pantsel/konga.git
-$ cd konga
-$ npm i
-```
-
-## Configuration
-You can configure your  application to use your environment specified
-settings.
-
-There is an example configuration file on the root folder.
-
-```
-.env_example
-```
-
-Just copy this to `.env` and make necessary changes to it. Note that this
-`.env` file is in .gitignore so it won't go to VCS at any point.
 
 ### Databases Integration
 
@@ -287,46 +263,6 @@ The application also supports some of the most popular databases out of the box:
 
 In order to use them, set the appropriate env vars in your `.env` file.
 
-
-## Running Konga
-
-### Development
-```
-$ npm start
-```
-Konga GUI will be available at `http://localhost:1337`
-
-### Production
-
-*****************************************************************************************
-In case of `MySQL` or `PostgresSQL` adapters, Konga will not perform db migrations when running in production mode.
-
-You can manually perform the migrations by calling ```$ node ./bin/konga.js  prepare```
-, passing the args needed for the database connectivity.
-
-For example:
-
-```
-$ node ./bin/konga.js  prepare --adapter postgres --uri postgresql://localhost:5432/konga
-```
-The process will exit after all migrations are completed.
-
-*****************************************************************************************
-
-Finally:
-```
-$ npm run production
-```
-Konga GUI will be available at `http://localhost:1337`
-
-
-### nginx
-
-The following instructions assume that you have a running Kong instance following the
-instructions from [Kong's docker hub](https://hub.docker.com/_/kong/)
-```
-0.0.1:8000; #30191
-```
 
 #### To use one of the supported databases
 
@@ -347,77 +283,17 @@ argument  | description | default
 $ docker run --rm pantsel/konga:latest -c prepare -a {{adapter}} -u {{connection-uri}}
 ```
 
-
-2. ##### Start Konga
-```
-$ docker run -p 1337:1337
-             --network {{kong-network}} \ // optional
-             -e "TOKEN_SECRET={{somerandomstring}}" \
-             -e "DB_ADAPTER=the-name-of-the-adapter" \ // 'mongo','postgres','sqlserver'  or 'mysql'
-             -e "DB_HOST=your-db-hostname" \
-             -e "DB_PORT=your-db-port" \ // Defaults to the default db port
-             -e "DB_USER=your-db-user" \ // Omit if not relevant
-             -e "DB_PASSWORD=your-db-password" \ // Omit if not relevant
-             -e "DB_DATABASE=your-db-name" \ // Defaults to 'konga_database'
-             -e "DB_PG_SCHEMA=my-schema"\ // Optionally define a schema when integrating with prostgres
-             -e "NODE_ENV=production" \ // or 'development' | defaults to 'development'
-             --name konga \
-             pantsel/konga
-
-
- // Alternatively you can use the full connection string to connect to a database
- $ docker run -p 1337:1337
-              --network {{kong-network}} \ // optional
-              -e "TOKEN_SECRET={{somerandomstring}}" \
-              -e "DB_ADAPTER=the-name-of-the-adapter" \ // 'mongo','postgres','sqlserver'  or 'mysql'
-              -e "DB_URI=full-connection-uri" \
-              -e "NODE_ENV=production" \ // or 'development' | defaults to 'development'
-              --name konga \
-              pantsel/konga
-```
-
-
-The GUI will be available at `http://{your server's public ip}:1337`
-
-
 [It is possible to seed default users on first install.](./docs/SEED_DEFAULT_DATA.md)
 
 You may also configure Konga to authenticate via [LDAP](./docs/LDAP.md).
 
+*****************************************************************************************
 
 ## Problems
 Clear ssh key:
 ```
 ssh-keygen -R 10.101.108.101
 ```
-
-## FAQ
-
-##### 1. Getting blank page with `Uncaught ReferenceError: angular is not defined`
-
-In some cases when running `npm install`, the bower dependencies are not installed properly.
-You will need to cd into your project's root directory and install them manually by typing
-```
-$ npm run bower-deps
-```
-
-##### 2. Can't add/edit some plugin properties.
-When a plugin property is an array, the input is handled by a chip component.
-You will need to press `enter` after every value you type in
-so that the component assigns it to an array index.
-See issue [#48](https://github.com/pantsel/konga/issues/48) for reference.
-
-##### 3. EACCES permission denied, mkdir '/kongadata/'.
-If you see this error while trying to run Konga, it means that konga has no write permissions to
-it's default data dir `/kongadata`.  You will just have to define the storage path yourself to
-a directory Konga will have access permissions via the env var `STORAGE_PATH`.
-
-##### 4. The hook `grunt` is taking too long to load
-The default timeout for the sails hooks to load is 60000. In some cases, depending on
-the memory the host machine has available, startup tasks like code minification and uglyfication
-may take longer to complete. You can fix that by setting then env var `KONGA_HOOK_TIMEOUT` to something
-greater than 60000, like 120000.
-
 
 ## More Kong related stuff
 - [**Kong Admin proxy**](https://github.com/pantsel/kong-admin-proxy)
@@ -426,20 +302,6 @@ greater than 60000, like 120000.
 ## Author
 
 Panagis Tselentis
-
-## License
-```
-The MIT License (MIT)
-=====================
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-```
 
 ## Documentation
 
