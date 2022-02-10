@@ -59,6 +59,7 @@ Setup
 ```
 yum update
 yum install yum-utils -y
+yum install firewalld
 
 setenforce 0
 sed -i --follow-symlinks 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
@@ -66,13 +67,47 @@ modprobe br_netfilter
 modprobe overlay
 echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
 swapoff -a
-sudo nano /etc/fstab
- #/dev/mapper/centos-swap swap swap defaults 0 0
+
+sudo vi /etc/fstab
+#/dev/mapper/centos-swap swap swap defaults 0 0
 ```
 [Fixed] Failed to set locale, defaulting to C
 ```
 ```
 
+Install Firewall
+```
+yum install firewalld
+
+systemctl start firewalld
+systemctl enable firewalld
+systemctl status firewalld
+```
+Setup Firewall
+```
+firewall-cmd --permanent --add-port=80/tcp
+firewall-cmd --permanent --add-port=443/tcp
+firewall-cmd --permanent --add-port=6443/tcp
+firewall-cmd --permanent --add-port=10250/tcp
+firewall-cmd --permanent --add-port=2379-2380/tcp
+firewall-cmd --permanent --add-port=10250/tcp
+firewall-cmd --permanent --add-port=10251/tcp
+firewall-cmd --permanent --add-port=10252/tcp
+firewall-cmd --permanent --add-port=10255/tcp
+firewall-cmd --permanent --add-port=8472/udp
+firewall-cmd --permanent --add-port=8001/tcp
+firewall-cmd --permanent --add-port=9090/tcp
+firewall-cmd --permanent --add-port=30000-32767/tcp
+firewall-cmd --add-masquerade --permanent
+firewall-cmd --reload
+```
+
+## Install Docker
+Setup Firewall
+```
+yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo -y
+yum install -y docker-ce
+```
 
 ## Features
 * Manage all Kong Admin API Objects.
