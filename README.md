@@ -49,11 +49,13 @@ Service Accounts = sa
 ## Setting up instances
 ```
 ssh nc-user@x.x.x.x
-
 ```
-* Add nameserver 8.8.8.8
+* Add nameserver
 ```
 vi /etc/resolv.conf
+
+nameserver 8.8.8.8
+nameserver 9.9.9.9
 ```
 * Setup
 ```
@@ -171,6 +173,20 @@ yum list --showduplicates kubectl --disableexcludes=kubernetes -y
 yum install -y kubelet-1.23.3 kubectl-1.23.3 kubeadm-1.23.3
 #!!! yum install -y kubelet kubeadm kubectl
 systemctl start kubelet && systemctl enable kubelet
+```
+_or_
+```
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+
+# Check
+curl -LO "https://dl.k8s.io/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
+
+# Validate
+echo "$(<kubectl.sha256)  kubectl" | sha256sum --check
+
+# Install
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+kubectl version --client
 ```
 * DONE
 
@@ -407,14 +423,10 @@ The GUI will be available at `http://{your server's public ip}:1337`
 You may also configure Konga to authenticate via [LDAP](./docs/LDAP.md).
 
 
-## Upgrading
-In some cases a newer version of Konga may introduce changes in database schemas.
-The only thing you need to do is to start Konga in dev mode once so that the migrations will be applied.
-Then stop the app and run it again in production mode.
-
-if you're using docker, you can lift an ephemeral container, as stated before:
+## Problems
+Clear ssh key:
 ```
-$ docker run --rm pantsel/konga:latest -c prepare -a {{adapter}} -u {{connection-uri}}
+ssh-keygen -R 10.101.108.101
 ```
 
 ## FAQ
