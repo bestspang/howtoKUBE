@@ -251,27 +251,39 @@ EOF
 
 sysctl --system
 ```
-If you're on an older Kong version , use [this](https://github.com/pantsel/konga/tree/legacy) branch
-or `konga:legacy` from docker hub instead.
+* Generate Tokens / 6.16
 
-## Used libraries
+```
+kubeadm token create kube.dev001 --print-join-command
 
-### Databases Integration
+kubeadm token create hp9b0k.1g9tqz8vkf78ucwf --print-join-command
+```
 
-Konga is bundled with It's own persistence mechanism for storing users and configuration.
+## Final Touch
 
-A local persistent object store is used by default, which works great as a bundled, starter database (with the strict caveat that it is for non-production use only).
+```
+docker pull devapi47/kube1:v1.0
+```
 
-The application also supports some of the most popular databases out of the box:
+* LoadBalancer
+```
+kubectl expose deployment/nginx-deployment --name=nginx-api1 --port=80 --type=LoadBalancer
+```
+## Kong and Konga
 
-1. MySQL
-2. MongoDB
-3. PostgresSQL
+### Kong
 
-In order to use them, set the appropriate env vars in your `.env` file.
+* Install Kong
+```
+--- install docker konga
+docker pull pantsel/konga
+docker run -d -p 1337:1337 --name konga pantsel/konga
+```
 
 
-#### To use one of the supported databases
+*****************************************************************************************
+
+## Short key
 
 1. ##### Prepare the database
 > **Note**: You can skip this step if using the `mongo` adapter.
