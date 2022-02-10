@@ -50,7 +50,7 @@ Service Accounts = sa
 ```
 ssh nc-user@x.x.x.x
 ```
-* Add nameserver
+* Add `nameserver`
 ```
 vi /etc/resolv.conf
 
@@ -162,6 +162,19 @@ Reload and start up
   systemctl start docker && systemctl enable docker
 ```
 ## Kubernetes
+* EOF
+```
+cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-\$basearch
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+exclude=kubelet kubeadm kubectl
+EOF
+```
 * Check Version
 ```
 yum list --showduplicates kubelet --disableexcludes=kubernetes -y
@@ -176,6 +189,7 @@ systemctl start kubelet && systemctl enable kubelet
 ```
 _or_
 ```
+# Download
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 
 # Check
@@ -190,9 +204,39 @@ kubectl version --client
 ```
 * DONE
 
-## Compatibility
-**From 0.14.0 onwards, Konga is ONLY compatible with Kong 1.x**
+## Master node
+**For Master node only**
 
+* 1
+```
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+```
+* 2
+```
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+-- sudo kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+```
+* 3
+```
+kubectl get pods --all-namespaces
+ --!! wait for ready all
+```
+* 4
+```
+sudo kubectl get nodes
+```
+* 5
+```
+cat > /etc/sysctl.d/99-kubernetes-cri.conf <<EOF
+net.bridge.bridge-nf-call-iptables = 1
+net.ipv4.ip_forward = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+EOF
+
+sysctl --system
+```
 If you're on an older Kong version , use [this](https://github.com/pantsel/konga/tree/legacy) branch
 or `konga:legacy` from docker hub instead.
 
@@ -228,33 +272,6 @@ There is an example configuration file on the root folder.
 
 Just copy this to `.env` and make necessary changes to it. Note that this
 `.env` file is in .gitignore so it won't go to VCS at any point.
-
-## Environment variables
-These are the general environment variables Konga uses.
-
-| VAR                | DESCRIPTION                                                                                                                | VALUES                                 | DEFAULT                                      |
-|--------------------|----------------------------------------------------------------------------------------------------------------------------|----------------------------------------|----------------------------------------------|
-| HOST               | The IP address that will be bind by Konga's server                                                                               | -                                      | '0.0.0.0'                                         |
-| PORT               | The port that will be used by Konga's server                                                                               | -                                      | 1337                                         |
-| NODE_ENV           | The environment                                                                                                            | `production`,`development`             | `development`                                |
-| SSL_KEY_PATH       | If you want to use SSL, this will be the absolute path to the .key file. Both `SSL_KEY_PATH` & `SSL_CRT_PATH` must be set. | -                                      | null                                         |
-| SSL_CRT_PATH       | If you want to use SSL, this will be the absolute path to the .crt file. Both `SSL_KEY_PATH` & `SSL_CRT_PATH` must be set. | -                                      | null                                         |
-| KONGA_HOOK_TIMEOUT | The time in ms that Konga will wait for startup tasks to finish before exiting the process.                                | -                                      | 60000                                        |
-| DB_ADAPTER         | The database that Konga will use. If not set, the localDisk db will be used.              | `mongo`,`mysql`,`postgres`     | -                                            |
-| DB_URI             | The full db connection string. Depends on `DB_ADAPTER`. If this is set, no other DB related var is needed.                 | -                                      | -                                            |
-| DB_HOST            | If `DB_URI` is not specified, this is the database host. Depends on `DB_ADAPTER`.                                          | -                                      | localhost                                    |
-| DB_PORT            | If `DB_URI` is not specified, this is the database port.  Depends on `DB_ADAPTER`.                                         | -                                      | DB default.                                  |
-| DB_USER            | If `DB_URI` is not specified, this is the database user. Depends on `DB_ADAPTER`.                                          | -                                      | -                                            |
-| DB_PASSWORD        | If `DB_URI` is not specified, this is the database user's password. Depends on `DB_ADAPTER`.                               | -                                      | -                                            |
-| DB_DATABASE        | If `DB_URI` is not specified, this is the name of Konga's db.  Depends on `DB_ADAPTER`.                                    | -                                      | `konga_database`                             |
-| DB_PG_SCHEMA       | If using postgres as a database, this is the schema that will be used.                                                     | -                                      | `public`                                     |
-| KONGA_LOG_LEVEL    | The logging level                                                                                                          | `silly`,`debug`,`info`,`warn`,`error`  | `debug` on dev environment & `warn` on prod. |
-| TOKEN_SECRET       | The secret that will be used to sign JWT tokens issued by Konga | - | - |
-| NO_AUTH            | Run Konga without Authentication                                                                                           | true/false                             | -                                         |
-| BASE_URL           | Define a base URL or relative path that Konga will be loaded from. Ex: www.example.com/konga                               | <string>                                     | -                                         |
-| KONGA_SEED_USER_DATA_SOURCE_FILE           | Seed default users on first run. [Docs](./docs/SEED_DEFAULT_DATA.md).                               | <string>                                     | -                                         |
-| KONGA_SEED_KONG_NODE_DATA_SOURCE_FILE      | Seed default Kong Admin API connections on first run [Docs](./docs/SEED_DEFAULT_DATA.md)                               | <string>                                     | -                                         |
-
 
 ### Databases Integration
 
@@ -308,62 +325,7 @@ Konga GUI will be available at `http://localhost:1337`
 The following instructions assume that you have a running Kong instance following the
 instructions from [Kong's docker hub](https://hub.docker.com/_/kong/)
 ```
-#upstream BackendSever {
-#    server 10.148.0.7;
-#}
-
-#upstream web {
-#  ip_hash;
-#  server 10.148.0.7:8000;
-#}
-
-server {
-    listen       0.0.0.0:80;
-    server_name  localhost;
-
-    #access_log  /var/log/nginx/host.access.log  main;
-
-    location / {
-        root   /usr/share/nginx/html;
-        index  index.html index.htm;
-    }
-
-    location /kubex {
-        proxy_pass http://127.0.0.1:8000; #30191
-        proxy_http_version  1.1;
-        #proxy_set_header Upgrade $http_upgrade;
-        #proxy_set_header Connection 'upgrade';
-        #proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
-        #proxy_redirect off;
-        #try_files $uri $uri/ =404;
-    }
-
-    #error_page  404              /404.html;
-
-    # redirect server error pages to the static page /50x.html
-    #
-    error_page   500 502 503 504  /50x.html;
-    location = /50x.html {
-        root   /usr/share/nginx/html;
-    }
-
-    # proxy the PHP scripts to Apache listening on 127.0.0.1:80
-    #
-    #location ~ \.php$ {
-    #    proxy_pass   http://127.0.0.1;
-    #}
-
-    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
-    #
-    #location ~ \.php$ {
-    #    root           html;
-    #    fastcgi_pass   127.0.0.1:9000;
-    #    fastcgi_index  index.php;
-    #    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
-    #    include        fastcgi_params;
-    #}
-
+0.0.1:8000; #30191
 ```
 
 #### To use one of the supported databases
@@ -479,56 +441,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-
-
-# Plantly Project
-
-**Plantly REST API** is an IOT project that willing to help plant grows.
-....
-..
-.
-
-## Installation
-
-```
-pip install Flask
-pip install flask-restful
-pip install Flask-JWT
-python app.py
-enjoy!
-```
-
-## Details
-#### Description
-- This is a Description of my other project!!!
-- I have use the sphere instead of hands to minimize the project and its look nice
-- kinda change it to Dark-Pink theme
-- the place will be able to move after go into the sink (on purpose) because I think it feel better!
-- however its will be removed from the level within the specific time
-- just stand at the spawn point and you'll be able to reach for all the plates
-- able to restart
-
-#### Implementation
-
-This project is implemented using Flask, and is a REST API for Greens.
-
-## Updates
-
-
-### Version 0.00
-
-```
-- init
-- python 3.7.3 and above
-- prepare file for MCU and API
-- Heroku employ ready
-- clean simple template
-```
-
 ## Documentation
 
 Documentation is available at [abbok.net](https://www.abbok.net/).
-
-## License
-
-**Plantly** is published under [MIT License 2019](https://github.com/bestspang/Plantly/blob/master/LICENSE).
