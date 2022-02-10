@@ -215,6 +215,7 @@ kubectl version --client
 **For Master node only**
 
 * 0
+
 [for more](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/)
 ```
 ifconfig
@@ -302,6 +303,7 @@ ssh-keygen -R 10.101.108.101
 ```
 
 check firewall:
+
 [for more](https://www.liquidweb.com/kb/how-to-stop-and-disable-firewalld-on-centos-7/)
 ```
 systemctl status firewalld
