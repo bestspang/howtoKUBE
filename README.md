@@ -18,28 +18,6 @@ _วิธีติดตั้ง Kubernetes, Kong และ Konga_
 - [**License**](#license)
 
 *****************************************************************************************
-
-## Tips
-_ก่อนเริ่มใส่คำสั่ง shortcut_
-```
-echo 'source <(kubectl completion bash)' >>~/.bashrc
-echo 'alias k=kubectl' >>~/.bashrc
-echo 'complete -F __start_kubectl k' >>~/.bashrc
-source ~/.bashrc
-```
-คำสั่งย่อต่างๆ
-```
-Pods = po
-ReplicaSets = rs
-Deployments = deploy
-Services = svc
-Namespaces = ns
-Network Policies = netpol
-Persistent Volumes = pv
-PersistentVolumeClaims = pvc
-Service Accounts = sa
-```
-
 ## Prerequisites
 - Cloud สำหรับติดตั้ง [Nipa](https://www.nipa.cloud/)
 - CentOS 7 >= 8, <= 12.x (12.16 LTS is recommended)
@@ -435,9 +413,17 @@ server {
   }
 ```
 *****************************************************************************************
+## Tips
+_ก่อนเริ่มใส่คำสั่ง shortcut_
+```
+echo 'source <(kubectl completion bash)' >>~/.bashrc
+echo 'alias k=kubectl' >>~/.bashrc
+echo 'complete -F __start_kubectl k' >>~/.bashrc
+source ~/.bashrc
+```
 
-## Short key
-> **Note**: You can skip this step if using the `mongo` adapter.
+### Short key
+> **Note**: คำสั่งย่อต่างๆ
 
 **Args**
 
