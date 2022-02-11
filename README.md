@@ -374,30 +374,91 @@ docker run -p 1337:1337 \
              -e "TOKEN_SECRET={{somerandomstring}}" \
              pantsel/konga
 ```
+
+### Setup Nginx
+```
+#upstream BackendSever {
+#    server 10.148.0.7;
+#}
+
+#upstream web {
+#  ip_hash;
+#  server 10.148.0.7:8000;
+#}
+
+server {
+    listen       0.0.0.0:80;
+    server_name  localhost;
+
+    #access_log  /var/log/nginx/host.access.log  main;
+
+    location / {
+        root   /usr/share/nginx/html;
+        index  index.html index.htm;
+    }
+
+    location /kubex {
+        proxy_pass http://127.0.0.1:8000; #30191
+        proxy_http_version  1.1;
+        #proxy_set_header Upgrade $http_upgrade;
+        #proxy_set_header Connection 'upgrade';
+        #proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        #proxy_redirect off;
+        #try_files $uri $uri/ =404;
+    }
+
+    #error_page  404              /404.html;
+
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+
+    # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+    #
+    #location ~ \.php$ {
+    #    proxy_pass   http://127.0.0.1;
+    #}
+
+    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+    #
+    #location ~ \.php$ {
+    #    root           html;
+    #    fastcgi_pass   127.0.0.1:9000;
+    #    fastcgi_index  index.php;
+    #    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
+    #    include        fastcgi_params;
+    #
+  }
+```
 *****************************************************************************************
 
 ## Short key
-
-1. ##### Prepare the database
 > **Note**: You can skip this step if using the `mongo` adapter.
-
-You can prepare the database using an ephemeral container that runs the prepare command.
 
 **Args**
 
-argument  | description | default
+shortnames  | description | shortnames | description
 ----------|-------------|--------
--c      | command | -
--a      | adapter (can be `postgres` or `mysql`) | -
--u     | full database connection url | -
-
-```
-$ docker run --rm pantsel/konga:latest -c prepare -a {{adapter}} -u {{connection-uri}}
-```
-
-[It is possible to seed default users on first install.](./docs/SEED_DEFAULT_DATA.md)
-
-You may also configure Konga to authenticate via [LDAP](./docs/LDAP.md).
+cs      | componentstatuses | sa |  serviceaccounts
+cm      | configmaps        | svc |  services
+ev      | events            | crd, crds |  customresourcedefinitions
+ep      | endpoints         | ds |  daemonsets
+limits  | limitranges       | deploy |  deployments
+ns      | namespaces        | rs |  replicasets
+no      | nodes             | sts |  statefulsets
+pvc     | persistentvolumeclaims | hpa |  horizontalpodautoscalers
+pv      | persistentvolumes | cj |  cronjobs
+po      | pods              | cr,crs |  certificiaterequests
+rc      | replicationcontrollers | cert,certs |  certificates
+ing     | ingresses         | csr |  certificatesigningrequests
+netpol  | networkpolicies   | rs |  replicasets
+ss      | scheduledscalers  | pc |  priorityclasses
+sc      | storageclasses    | quota |  resourcequotas
+psp     | podsecuritypolicies |  -  |  -
 
 *****************************************************************************************
 
@@ -443,6 +504,8 @@ https://stackoverflow.com/questions/52039898/error-while-kubernetes-kubeadm-init
 https://serverfault.com/questions/1044211/docker-nginx-php-fpm-error-502-bad-gateway
 https://stackoverflow.com/questions/21524373/nginx-connect-failed-111-connection-refused-while-connecting-to-upstream
 
+*****************************************************************************************
+
 ## Documentation
 ### Nginx
 https://shouts.dev/install-nginx-on-centos-7
@@ -471,9 +534,11 @@ https://serverfault.com/questions/598202/make-nginx-to-pass-hostname-of-the-upst
 ### Docker
 [Install Docker](https://github.com/bestspang/howtoKUBE/blob/main/README.md#faq)
 
-## More Kong related stuff
+### More Kong related stuff
 - [**Kong Admin proxy**](https://github.com/pantsel/kong-admin-proxy)
 - [**Kong Middleman plugin**](https://github.com/pantsel/kong-middleman-plugin)
+
+*****************************************************************************************
 
 ## Author
 
