@@ -258,7 +258,7 @@ yum install -y gcc gcc-c++ pcre pcre-devel zlib zlib-devel openssl openssl-devel
 ```
 yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
 yum install -y postgresql10-server
-yum install -y postgresql10-server
+yum install -y postgresql10-contrib
 /usr/pgsql-10/bin/postgresql-10-setup initdb
 systemctl enable postgresql-10
 systemctl start postgresql-10
@@ -272,6 +272,8 @@ systemctl start postgresql-10
 ```
 * Create DB for Kong
 ```
+# su postgres
+
 psql
 create user kong with password 'your_password';
 create database kong owner kong;
@@ -305,9 +307,16 @@ systemctl restart postgresql-10.service
 * Install Kong
 _more information [here](https://docs.konghq.com/gateway/2.7.x/install-and-run/centos/)_
 ```
+curl $(rpm --eval "https://download.konghq.com/gateway-2.x-centos-%{centos_ver}/config.repo") | sudo tee /etc/yum.repos.d/kong.repo
+
 sudo yum install kong-2.7.1
 ```
+or
+```
+curl -Lo kong-2.7.1.rpm $(rpm --eval "https://download.konghq.com/gateway-2.x-centos-%{centos_ver}/Packages/k/kong-2.7.1.el%{centos_ver}.amd64.rpm")
 
+sudo yum install kong-2.7.1.rpm
+```
 * Prepare config file
 ```
 # cp /etc/kong/kong.conf.default /etc/kong/kong.conf
@@ -452,6 +461,15 @@ psp     | podsecuritypolicies |  -  |  -
 Clear ssh key:
 ```
 ssh-keygen -R 10.101.108.101
+```
+```
+cat bintray-kong-kong-community-edition-rpm.repo \
+[bintraybintray-kong-kong-community-edition-rpm] \
+name=bintray--kong-kong-community-edition-rpm \
+baseurl=https://kong.bintray.com/kong-community-edition-rpm/centos/7
+gpgcheck=0
+repo_gpgcheck=0
+enabled=1
 ```
 
 check firewall:
