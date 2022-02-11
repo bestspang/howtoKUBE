@@ -269,7 +269,7 @@ kubectl expose deployment/nginx-deployment --name=nginx-api1 --port=80 --type=Lo
 ```
 ## Kong and Konga
 
-### Kong
+### Install database
 
 * Install environment
 ```
@@ -322,16 +322,57 @@ systemctl restart postgresql-10.service
 ```
 
 
+### Install Kong
 
 * Install Kong
+_more information [here](https://docs.konghq.com/gateway/2.7.x/install-and-run/centos/)_
+```
+sudo yum install kong-2.7.1
+```
+
+* Prepare config file
+```
+# cp /etc/kong/kong.conf.default /etc/kong/kong.conf
+# vim /etc/kong/kong.conf
+```
+
+* Edit file
+```
+admin_listen =0.0.0.0:8001
+
+database = postgres
+pg_host = 127.0.0.1
+pg_port 5432
+pg_user = kong
+pg_password = your_password #PASSWORD POSTGRESQL USER KONG
+pg_database = kong
+```
+
+* Start kong
+```
+# kong migrations bootstrap -c/etc/kong/kong.conf
+# kong start -c/etc/kong/kong.conf --vv
+# curl 127.0.0.1:8001
+```
+
+### Install Konga
+* Install Kong
+_more [here](https://hub.docker.com/r/pantsel/konga/#prerequisites)_
+konga [repo](https://github.com/pantsel/konga)
 
 ```
---- install docker konga
 docker pull pantsel/konga
+
 docker run -d -p 1337:1337 --name konga pantsel/konga
 ```
-
+_or_
 ```
+docker run -p 1337:1337 \
+             --network {{kong-network}} \ // optional
+             --name konga \
+             -e "NODE_ENV=production" \ // or "development" | defaults to 'development'
+             -e "TOKEN_SECRET={{somerandomstring}}" \
+             pantsel/konga
 ```
 *****************************************************************************************
 
@@ -383,14 +424,59 @@ or
 mv /boot/grub/grub.conf /boot/grub/bk_grub.conf
 yum -y update && yum -y reinstall kernel
 ```
+
+Nginx:
+```
+service nginx restart
+systemctl restart nginx
+```
+```
+setsebool -P httpd_can_network_connect 1
+or
+setsebool -P httpd_can_network_relay 1
+
+firewall-cmd --set-default-zone=trusted
+```
+https://stackoverflow.com/questions/35177177/nginx-error-13-permission-denied-while-connecting-to-upstream
+https://stackoverflow.com/questions/23948527/13-permission-denied-while-connecting-to-upstreamnginx
+https://stackoverflow.com/questions/52039898/error-while-kubernetes-kubeadm-initialization
+https://serverfault.com/questions/1044211/docker-nginx-php-fpm-error-502-bad-gateway
+https://stackoverflow.com/questions/21524373/nginx-connect-failed-111-connection-refused-while-connecting-to-upstream
+
+## Documentation
+### Nginx
+https://shouts.dev/install-nginx-on-centos-7
+### Learning
+### เตรียมสอบ
+[nopnithi](https://nopnithi.medium.com/%E0%B9%81%E0%B8%8A%E0%B8%A3%E0%B9%8C%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%AA%E0%B8%9A%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%93%E0%B9%8C%E0%B9%80%E0%B8%95%E0%B8%A3%E0%B8%B5%E0%B8%A2%E0%B8%A1%E0%B8%AA%E0%B8%AD%E0%B8%9A-cka-%E0%B9%81%E0%B8%A5%E0%B8%B0-ckad-kubernetes-certification-6e4575de8320)
+[openlandscape](https://blog.openlandscape.cloud/certified_kubernetes_administrator)
+
+#### Kong and Konga
+[wisdomgoody](https://wisdomgoody.medium.com/%E0%B8%AA%E0%B8%AD%E0%B8%99%E0%B8%95%E0%B8%B4%E0%B8%94%E0%B8%95%E0%B8%B1%E0%B9%89%E0%B8%87-kong-api-gateway-with-kubernetes-k8s-and-nginx-ingress-konga-on-google-cloud-gke-d94cc6b2e965)
+https://blog.unixdev.co.th/install-kong-and-konga-on-centos7/
+https://www.programmerall.com/article/40022225267/
+#### Flask
+https://github.com/bestspang/kubernetes-the-hard-way
+https://medium.com/@towfeeqpandith/dockerizing-python-flask-application-and-deploying-on-kubernetes-a33de0614f67
+https://medium.com/swlh/deploying-flask-app-with-kubernetes-aba8166e5f2c
+
+### Reverse Proxy
+[Reverse proxy](https://linuxize.com/post/nginx-reverse-proxy/)
+[Avoid nginx decoding query parameters on proxy_pass](https://stackoverflow.com/questions/20496963/avoid-nginx-decoding-query-parameters-on-proxy-pass-equivalent-to-allowencodeds)
+[How can query string parameters be forwarded through a proxy_pass](https://stackoverflow.com/questions/8130692/how-can-query-string-parameters-be-forwarded-through-a-proxy-pass-with-nginx)
+[How to remove the path with an nginx proxy_pass](https://serverfault.com/questions/562756/how-to-remove-the-path-with-an-nginx-proxy-pass)
+https://serverfault.com/questions/598202/make-nginx-to-pass-hostname-of-the-upstream-when-reverseproxying
+
+
+### Docker
+[Install Docker](https://github.com/bestspang/howtoKUBE/blob/main/README.md#faq)
+
 ## More Kong related stuff
 - [**Kong Admin proxy**](https://github.com/pantsel/kong-admin-proxy)
 - [**Kong Middleman plugin**](https://github.com/pantsel/kong-middleman-plugin)
 
 ## Author
 
-Panagis Tselentis
+Best Suriyawanakul
 
-## Documentation
-
-Documentation is available at [abbok.net](https://www.abbok.net/).
+Documentation is available at [dayone.fun](https://www.dayone.fun/).
