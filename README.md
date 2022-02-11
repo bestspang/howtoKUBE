@@ -320,7 +320,7 @@ sudo yum install kong-2.7.1.rpm
 * Prepare config file
 ```
 # cp /etc/kong/kong.conf.default /etc/kong/kong.conf
-# vim /etc/kong/kong.conf
+# vi /etc/kong/kong.conf
 ```
 
 * Edit file
@@ -362,7 +362,19 @@ docker run -p 1337:1337 \
              pantsel/konga
 ```
 
+* Connect Konga to Master node
+
+```
+using internal IP of internal IP
+```
+
+
+
+
 ### Setup Nginx
+
+https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-centos-7
+
 ```
 #upstream BackendSever {
 #    server 10.148.0.7;
