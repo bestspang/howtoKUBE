@@ -442,7 +442,7 @@ server {
 **Args**
 
 shortnames  | description | shortnames | description
-----------|-------------|--------
+----------|-------------|---------|---------
 cs      | componentstatuses | sa |  serviceaccounts
 cm      | configmaps        | svc |  services
 ev      | events            | crd, crds |  customresourcedefinitions
