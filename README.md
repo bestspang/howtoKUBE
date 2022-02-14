@@ -493,7 +493,32 @@ sudo firewall-cmd --zone=work --list-all
 ```
 Can't start firewall:
 ```
+pkill -f firewalld
+
+firewall-cmd --state
+systemctl start firewalld
+firewall-cmd --state
 ```
+
+How to Fix "Read-only file system" error:
+```
+sudo fsck -n -f
+
+reboot
+```
+or
+```
+# this  working
+sudo mount -o rw,remount /
+```
+https://askubuntu.com/questions/287021/how-to-fix-read-only-file-system-error-when-i-run-something-as-sudo-and-try-to
+or
+```
+# not work
+sudo chmod -R 755 yourfoldername
+```
+https://superuser.com/questions/591108/how-can-i-restore-the-permissions-of-my-usr-folder
+
 Upgrade Kernel:
 ```
 grub2-mkconfig -o /boot/grub2/grub.cfg
@@ -501,6 +526,18 @@ or
 mv /boot/grub/grub.conf /boot/grub/bk_grub.conf
 yum -y update && yum -y reinstall kernel
 ```
+
+The connection to the server <host> was refused:
+```
+# not working
+sudo -i
+swapoff -a
+exit
+strace -eopenat kubectl version
+```
+https://discuss.kubernetes.io/t/the-connection-to-the-server-host-6443-was-refused-did-you-specify-the-right-host-or-port/552
+https://discuss.kubernetes.io/t/the-connection-to-the-server-localhost-8080-was-refused-did-you-specify-the-right-host-or-port/1464
+
 
 Nginx:
 ```
