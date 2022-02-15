@@ -527,6 +527,13 @@ mv /boot/grub/grub.conf /boot/grub/bk_grub.conf
 yum -y update && yum -y reinstall kernel
 ```
 
+Search:
+```
+find / -name file.xxx
+```
+Remove Nginx:
+https://otodiginet.com/software/how-to-unistall-nginx-from-centos-7/
+
 The connection to the server <host> was refused:
 ```
 # not working
@@ -586,6 +593,8 @@ https://serverfault.com/questions/598202/make-nginx-to-pass-hostname-of-the-upst
 
 ### Docker
 [Install Docker](https://github.com/bestspang/howtoKUBE/blob/main/README.md#faq)
+Proxy:
+https://docs.docker.com/config/daemon/systemd/
 
 ### More Kong related stuff
 - [**Kong Admin proxy**](https://github.com/pantsel/kong-admin-proxy)
