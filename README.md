@@ -549,7 +549,11 @@ https://discuss.kubernetes.io/t/the-connection-to-the-server-localhost-8080-was-
 Nginx:
 ```
 service nginx restart
+
+vi /etc/nginx/conf.d/default.conf
+sudo nginx -t
 systemctl restart nginx
+tail -30 /var/log/nginx/error.log
 ```
 ```
 setsebool -P httpd_can_network_connect 1
@@ -568,7 +572,8 @@ https://stackoverflow.com/questions/21524373/nginx-connect-failed-111-connection
 
 ## Documentation
 ### Nginx
-https://shouts.dev/install-nginx-on-centos-7
+https://otodiginet.com/software/how-to-unistall-nginx-from-centos-7/
+https://www.cyberciti.biz/faq/how-to-install-and-use-nginx-on-centos-7-rhel-7/
 ### Learning
 ### เตรียมสอบ
 [nopnithi](https://nopnithi.medium.com/%E0%B9%81%E0%B8%8A%E0%B8%A3%E0%B9%8C%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%AA%E0%B8%9A%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%93%E0%B9%8C%E0%B9%80%E0%B8%95%E0%B8%A3%E0%B8%B5%E0%B8%A2%E0%B8%A1%E0%B8%AA%E0%B8%AD%E0%B8%9A-cka-%E0%B9%81%E0%B8%A5%E0%B8%B0-ckad-kubernetes-certification-6e4575de8320)
