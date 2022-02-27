@@ -373,7 +373,94 @@ using internal IP of internal IP
 
 ### Setup Nginx
 
-https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-centos-7
+https://phoenixnap.com/kb/how-to-install-nginx-on-centos-7
+https://serverspace.io/support/help/install-and-configure-nginx-on-centos-7/
+https://www.cyberciti.biz/faq/how-to-install-and-use-nginx-on-centos-7-rhel-7/
+
+* add the CentOS 7 EPEL repository
+```
+sudo yum install epel-release
+```
+* Create the file named /etc/yum.repos.d/nginx.repo
+```
+sudo vi /etc/yum.repos.d/nginx.repo
+```
+* Append following for CentOS 7.x:
+```
+[nginx]
+name=nginx repo
+baseurl=http://nginx.org/packages/mainline/centos/7/$basearch/
+gpgcheck=0
+enabled=1
+```
+or Append following for RHEL (Red Hat Enterprise Linux) version 7.x
+```
+[nginx]
+name=nginx repo
+baseurl=http://nginx.org/packages/mainline/rhel/7/$basearch/
+gpgcheck=0
+enabled=1
+```
+
+* Install nginx package
+```
+sudo yum install nginx
+```
+
+* Not sure
+```
+vi /etc/nginx/nginx.conf
+# listen [::]:80 default_server;
+nginx -t
+```
+
+* Start/stop/restart nginx server
+```
+sudo systemctl enable nginx
+sudo systemctl start nginx
+sudo systemctl status nginx
+```
+command:
+```
+sudo systemctl start nginx
+sudo systemctl stop nginx
+sudo systemctl restart nginx
+sudo systemctl status nginx
+
+```
+* Open port 80 and 443 using firewall-cmd
+```
+sudo firewall-cmd --permanent --zone=public --add-service=http
+sudo firewall-cmd --permanent --zone=public --add-service=https
+sudo firewall-cmd --reload
+```
+
+* Verify that port 80 or 443 opened using ss command:
+```
+sudo ss -tulpn
+```
+
+* If you do not know your server IP address run the following
+```
+ip a
+or
+ip addr
+```
+
+
+* Configure Nginx server
+
+- Config dir – /etc/nginx/
+- Master/Global config file – /etc/nginx/nginx.conf
+- Port 80 http config file – /etc/nginx/conf.d/default
+- TCP ports opened by Nginx – 80 (HTTP), 443 (HTTPS)
+- Document root directory – /usr/share/nginx/html
+
+```
+vi /etc/nginx/conf.d/default.conf
+sudo nginx -t
+systemctl restart nginx
+```
 
 ```
 #upstream BackendSever {
@@ -526,6 +613,12 @@ or
 mv /boot/grub/grub.conf /boot/grub/bk_grub.conf
 yum -y update && yum -y reinstall kernel
 ```
+
+grubby fatal error: unable to find a suitable template:
+```
+grub2-mkconfig -o /boot/grub2/grub.cfg
+```
+
 
 Search:
 ```
