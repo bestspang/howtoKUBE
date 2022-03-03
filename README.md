@@ -361,11 +361,20 @@ docker run -p 1337:1337 \
              -e "TOKEN_SECRET={{somerandomstring}}" \
              pantsel/konga
 ```
-
+_or add ssl_
+```
+docker run -p 1337:1337 \
+             --network {{kong-network}} \ // optional
+             --name konga \
+             -e "NODE_ENV=production" \ // or "development" | defaults to 'development'
+             -e "TOKEN_SECRET={{somerandomstring}}" \
+             pantsel/konga
+```
 * Connect Konga to Master node
 
 ```
 using internal IP of internal IP
+x.x.x.x:8001
 ```
 
 
@@ -476,6 +485,15 @@ server {
     listen       0.0.0.0:80;
     server_name  localhost;
 
+    listen 443 ssl;
+
+    #ssl on;
+    ssl_certificate agilis-platform.com.pem;
+    ssl_certificate_key agilis-platform.com.key;
+
+    client_max_body_size 10M;
+    autoindex off;
+
     #access_log  /var/log/nginx/host.access.log  main;
 
     location / {
@@ -520,6 +538,42 @@ server {
     #
   }
 ```
+
+* Make SSL
+```
+vi /etc/nginx/dayone.fun.pem
+vi /etc/nginx/dayone.fun.key
+
+sudo nginx -t
+systemctl restart nginx
+```
+
+## Install Helm Kubernetes
+* Installing [here](https://www.cyberithub.com/steps-to-install-helm-kubernetes-package-manager-on-linux/)
+check release https://github.com/helm/helm/releases
+```
+wget https://get.helm.sh/helm-v3.8.3-linux-amd64.tar.gz
+tar -xvf helm-v3.6.3-linux-amd64.tar.gz
+mv linux-amd64/helm /usr/local/bin/helm
+helm repo add stable https://charts.helm.sh/stable
+```
+command:
+```
+helm list
+helm3 del <release-name> --namespace <namespace>
+helm repo update
+
+```
+## Prometheus and Grafana
+```
+kubectl create namespace prometheus
+
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+
+helm install prometheus prometheus-community/kube-prometheus-stack --version 33.1.0 --namespace prometheus
+```
+
 *****************************************************************************************
 ## Tips
 _ก่อนเริ่มใส่คำสั่ง shortcut_
@@ -585,6 +639,18 @@ pkill -f firewalld
 firewall-cmd --state
 systemctl start firewalld
 firewall-cmd --state
+```
+
+Docker Got permission denied while trying to connect to the Docker:
+https://stackoverflow.com/questions/47854463/docker-got-permission-denied-while-trying-to-connect-to-the-docker-daemon-socke
+```
+or 664
+sudo chmod 666 /var/run/docker.sock
+```
+
+M1:
+```
+docker build --platform linux/amd64 -t lakhansamani/docker-demo .
 ```
 
 How to Fix "Read-only file system" error:
